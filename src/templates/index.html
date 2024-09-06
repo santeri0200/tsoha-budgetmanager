@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{title}} - {{appname}}</title>
+
+  <!-- METADATA BLOCK -->
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#FFF">
+  <meta name="color-scheme" content="light dark">
+  <meta name="viewport" content="initial-scale=1, width=device-width">
+
+  <!-- LINKS -->
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- JAVASCRIPT -->
+  <script>
+    document.addEventListener("DOMContentLoaded", (_) => console.log("Script: DOMContentLoaded!"));
+    window.onload = (_) => console.log("Another onload");
+  </script>
+</head>
+
+<body>{{body}}</body>
+
+</html>
