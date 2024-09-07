@@ -40,7 +40,6 @@ def api():
     res = db.session.execute(sql, {"username": "test"}).fetchone()
     if not res:
         sql = text("INSERT INTO users VALUES (DEFAULT, :username, :password)")
-        print(f"{ len(generate_password_hash("test")) }")
         db.session.execute(sql, {"username": "test", "password": generate_password_hash("test")})
         db.session.commit()
 
@@ -53,7 +52,6 @@ def login():
 
     sql = text("SELECT password FROM users WHERE name = :username")
     res = db.session.execute(sql, {"username": username}).fetchone()
-    print(res)
     if res and check_password_hash(res[0], password):
         session["username"] = username
         
@@ -67,8 +65,6 @@ def logout():
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
-    print(f"session: { session }")
-
     items = nav_items('/' + path.split("/")[0])
     title = [item["name"] for item in items if item["is_active"]]
     return render_template(
