@@ -1,0 +1,10 @@
+body {
+  --text: #FFF;
+  --text-toned: #B5B6BB;
+
+  --dark-blue: #0E1015;
+  --gray: #13151B;
+  --gray-border: #202328;
+
+  --action-color-main: linear-gradient(to bottom right, #FE112D, #CE0F50);
+}

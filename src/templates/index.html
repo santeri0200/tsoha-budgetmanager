@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>{{title}} - {{appname}}</title>
+  <title>{{ title if session.user else "Login" }} - {{appname}}</title>
 
   <!-- METADATA BLOCK -->
   <meta name="referrer" content="no-referrer">
@@ -13,6 +13,7 @@
 
   <!-- LINKS -->
   <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="{{ url_for('static', filename='colors.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
   <!-- JAVASCRIPT -->
@@ -22,6 +23,13 @@
   </script>
 </head>
 
-<body>{{body}}</body>
+<body>
+  {% if session.user %}
+  {% include "nav.html" with context %}
+  {% include "content.html" with context %}
+  {% else %}
+  {% include "login.html" without context %}
+  {% endif %}
+</body>
 
 </html>
