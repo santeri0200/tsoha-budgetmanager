@@ -44,15 +44,32 @@ body {
 }
 
 .navbar-item {
-  padding: 0.5em 1.0em;
+  display: flex;
+
+  margin: 0.5em 0;
+
+  border: 1px solid transparent;
+  border-radius: 0.375em;
+  transition-delay: 25ms;
+  transition-duration: 275ms;
+}
+
+.navbar-item:hover {
+  border: 1px solid var(--gray-border);
+  background-color: var(--dark-blue);
 }
 
 .navbar-item.active {
-  border-radius: 0.375em;
   background-image: var(--action-color-main);
 }
 
 .navbar-item>a {
+  position: relative;
+
+  margin: auto 0;
+  padding: 0.5em 1.0em;
+  width: 100%;
+
   color: var(--text);
   text-decoration: none;
 }
@@ -68,6 +85,8 @@ body {
   position: relative;
   display: flex;
   justify-content: center;
+
+  margin-bottom: 1em;
 }
 
 .user>.username,
