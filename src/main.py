@@ -12,7 +12,6 @@ from flask import request
 from flask import redirect, url_for
 from flask import render_template
 
-APPNAME="Budget manager"
 app = Flask(__name__, static_folder="static", static_url_path='/static')
 app.secret_key = getenv("SECRET_KEY")
 
@@ -70,7 +69,7 @@ def add_test_asset():
     return redirect(url_for('index'))
 
 @app.route("/login", methods=["POST"])
-def login():
+def handle_login():
     username = request.form["username"]
     password = request.form["password"]
 
@@ -78,24 +77,32 @@ def login():
     res = db.session.execute(sql, {"username": username}).fetchone()
     if res and check_password_hash(res[0], password):
         session["username"] = username
+        return redirect(url_for('index'))
         
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
+
+@app.route("/login", methods=["GET"])
+def login():
+    return render_template("login.jinja")
 
 @app.route("/logout")
 def logout():
     session.pop("username", None)
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
     
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
+    if "username" not in session:
+        return redirect(url_for("login"))
+
     items = nav_items('/' + path.split("/")[0])
     title = [item["name"] for item in items if item["is_active"]]
+    title = title[0] if len(title) else ""
     return render_template(
-        "index.html",
-        appname=APPNAME,
-        title=title[0] if len(title) else "",
-        session={ "user": session["username"] if "username" in session else "" },
+        "index.jinja",
+        title=title,
+        session={ "user": session["username"] },
         nav_items=items,
     )
 

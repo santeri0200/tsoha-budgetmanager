@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>{{ title if session.user else "Login" }} - {{appname}}</title>
+  <title>{% block title %}???{% endblock %} - Budget manager</title>
 
   <!-- METADATA BLOCK -->
   <meta name="referrer" content="no-referrer">
@@ -24,12 +24,7 @@
 </head>
 
 <body>
-  {% if session.user %}
-  {% include "nav.html" with context %}
-  {% include "content.html" with context %}
-  {% else %}
-  {% include "login.html" without context %}
-  {% endif %}
+  {% block content %}{% endblock %}
 </body>
 
 </html>

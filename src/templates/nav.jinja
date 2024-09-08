@@ -1,9 +1,9 @@
 <div class="sidebar">
   <ul class="navbar">
     {% for item in nav_items %}
-    <li class="navbar-item{% if item.is_active %} active{% endif %}">
-      <a href="{{ item.path }}">{{ item.name }}</a>
-    </li>
+      <li class="navbar-item{% if item.is_active %} active{% endif %}">
+        <a href="{{ item.path }}">{{ item.name }}</a>
+      </li>
     {% endfor %}
   </ul>
   <hr>
