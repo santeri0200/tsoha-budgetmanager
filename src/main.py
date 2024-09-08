@@ -34,14 +34,38 @@ def nav_items(path: str):
 
     return items
 
-@app.route("/api/test")
-def api():
+@app.route("/api/test/user")
+def add_test_user():
     sql = text("SELECT * FROM users WHERE name = :username")
     res = db.session.execute(sql, {"username": "test"}).fetchone()
     if not res:
         sql = text("INSERT INTO users VALUES (DEFAULT, :username, :password)")
         db.session.execute(sql, {"username": "test", "password": generate_password_hash("test")})
         db.session.commit()
+
+    return redirect(url_for('index'))
+
+@app.route("/api/test/asset")
+def add_test_asset():
+    from datetime import datetime
+    type = "some asset"
+    details = "Have some details..."
+
+    sql = text("""
+        INSERT INTO assets VALUES (DEFAULT, (
+            SELECT id FROM users WHERE name = 'test'
+        ), :type, :details)
+    """)
+    db.session.execute(sql, {"type": type, "details": details})
+    sql = text("""
+        INSERT INTO asset_history VALUES ((
+            SELECT id FROM assets WHERE userid = (
+                SELECT id FROM users WHERE name = 'test'
+            ) AND type = :type
+        ), :date, :value)
+    """)
+    db.session.execute(sql, {"type": type, "date": datetime(2024, 1, 1).date(), "value": 100.00})
+    db.session.commit()
 
     return redirect(url_for('index'))
 
