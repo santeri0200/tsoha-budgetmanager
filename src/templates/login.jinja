@@ -2,11 +2,12 @@
 
 {% block title %}Login{% endblock %}
 {% block content%}
-<div class="login">
+<div class="login{% if error %} error{% endif %}">
   <h1>Login</h1>
   <form method="POST" action="/login">
     <input type="text" name="username" required="true" placeholder="Username" autofocus>
     <input type="password" name="password" required="true" placeholder="Password" minlength="3">
+    {% if error %}<p id="inform">Invalid credentials!</p>{% endif %}
     <hr>
     <input type="submit" value="Login">
   </form>

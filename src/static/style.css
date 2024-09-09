@@ -147,6 +147,28 @@ body {
   background: var(--action-color-main);
 }
 
+@keyframes login-error {
+  0% {}
+
+  50% {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  100% {}
+}
+
+.login.error {
+  animation: login-error 300ms 2;
+}
+
+.login>form>#inform {
+  text-align: center;
+  color: var(--text-bright);
+
+  animation: login-error 300ms 2;
+}
+
 .login>form>hr {
   margin: 1.25em 0 0.75em;
 

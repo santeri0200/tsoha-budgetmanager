@@ -79,11 +79,14 @@ def handle_login():
         session["username"] = username
         return redirect(url_for('index'))
         
-    return redirect(url_for('login'))
+    return redirect(url_for('login', invalid_credentials=1))
 
 @app.route("/login", methods=["GET"])
 def login():
-    return render_template("login.jinja")
+    return render_template(
+        "login.jinja",
+        error=request.args.get('invalid_credentials')
+    )
 
 @app.route("/logout")
 def logout():

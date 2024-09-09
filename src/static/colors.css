@@ -1,4 +1,5 @@
 body {
+  --text-bright: #FFF;
   --text: #EBECD0;
   --text-toned: #B5B6BB;
 
@@ -6,5 +7,7 @@ body {
   --gray: #13151B;
   --gray-border: #202328;
 
-  --action-color-main: linear-gradient(to bottom right, #FE112D, #CE0F50);
+  --red: #FE112D;
+  --dark-pink: #CE0F50;
+  --action-color-main: linear-gradient(to bottom right, var(--red), var(--dark-pink));
 }
