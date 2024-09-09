@@ -1,1 +1,37 @@
-<div class="content">Hello, {{ session.user|safe }}!</div>
+{% macro panel_content(rows=4) %}
+  {# This could be done with tables, but I don't want to play with them. #}
+  <div class="panel-content">
+    <div class="panel-item-col">
+      <p>Name</p>
+      {% for _ in range(rows) %}
+        <p>Text</p>
+      {% endfor %}
+    </div>
+    <div class="panel-item-col">
+      <p>Value</p>
+      {% for _ in range(rows) %}
+        <p>Text</p>
+      {% endfor %}
+    </div>
+    <div class="panel-item-col panel-item-col-last">
+      <p>Description</p>
+      {% for _ in range(rows) %}
+        <p>Vitae qui rem consequuntur animi. Est quos neque vel voluptatibus non corporis. Ut esse iusto dolore sapiente voluptas doloremque.</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endmacro %}
+
+<div class="content">
+  <div class="panel panel-expandable">
+    <a class="panel-type" href="/assets">Assets</a>
+    {{ panel_content() }}
+  </div>
+  <div class="panel panel-expandable">
+    <a class="panel-type" href="/receipts">Receipts</a>
+    {{ panel_content() }}
+  </div>
+  <div class="panel panel-graph">
+    <a class="panel-type" href="/assets">Asset value</a>
+  </div>
+</div>
