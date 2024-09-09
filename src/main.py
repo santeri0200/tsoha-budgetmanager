@@ -22,17 +22,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 db = SQLAlchemy(app)
 
-def nav_items(path: str):
-    items = [
-        { "name": "Dashboard", "path": "/", },
-        { "name": "Settings",  "path": "/settings", },
-    ]
-
-    for item in items:
-        item["is_active"] = item["path"] == path
-
-    return items
-
 @app.route("/api/test/user")
 def add_test_user():
     sql = text("SELECT * FROM users WHERE name = :username")
@@ -99,14 +88,10 @@ def index(path):
     if "username" not in session:
         return redirect(url_for("login"))
 
-    items = nav_items('/' + path.split("/")[0])
-    title = [item["name"] for item in items if item["is_active"]]
-    title = title[0] if len(title) else ""
     return render_template(
         "index.jinja",
-        title=title,
+        rootpath='/' + path.split("/")[0],
         session={ "user": session["username"] },
-        nav_items=items,
     )
 
 @app.after_request

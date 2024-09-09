@@ -1,9 +1,14 @@
+{% set items = [
+  { "name": "Dashboard", "path": "/" },
+  { "name": "Settings",  "path": "/settings" }
+] %}
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <title>{% block title %}???{% endblock %} - Budget manager</title>
+  <title>{{ items|selectattr("path", "equalto", rootpath)|map(attribute="name")|first }} - Budget manager</title>
 
   <!-- METADATA BLOCK -->
   <meta name="referrer" content="no-referrer">
