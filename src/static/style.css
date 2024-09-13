@@ -155,7 +155,10 @@ body {
   animation: login-error 300ms 2;
 }
 
-.login>form>#inform {
+.login>form>.inform {
+  margin: 0.75em 0;
+  padding: 0;
+
   text-align: center;
   color: var(--text-bright);
 

@@ -2,10 +2,8 @@
 from main import app
 
 # Webserver imports
-from flask import session
-from flask import request
-from flask import redirect, url_for
-from flask import render_template
+from flask import request, session
+from flask import redirect, url_for, render_template, flash
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash
 
@@ -13,12 +11,13 @@ from werkzeug.security import check_password_hash
 from markupsafe import escape
 from datetime import date
 
+# LOGIN
 @app.route("/login", methods=["GET"])
 def login():
-    return render_template(
-        "login.jinja",
-        error=request.args.get('invalid_credentials')
-    )
+    if "username" in session:
+        return redirect(url_for("index"))
+
+    return render_template("login.jinja", title="Login")
 
 @app.route("/login", methods=["POST"])
 def handle_login():
@@ -31,24 +30,23 @@ def handle_login():
     if res and check_password_hash(res[2], password):
         session["username"] = username
         return redirect(url_for('index'))
-        
-    return redirect(url_for('login', invalid_credentials=1))
+    
+    flash("Invalid credentials!")
+    return redirect(url_for('login'))
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     session.pop("username", None)
     return redirect(url_for('login'))
 
+# INDEX
 @app.route("/", methods=["GET"])
-def index():
+@app.route("/<path:path>", methods=["GET"])
+def index(path = ''):
     if "username" not in session:
         return redirect(url_for("login"))
 
-    return render_template(
-        "index.jinja",
-        rootpath='/' + request.path.split("/")[0],
-        session={ "user": session["username"] },
-    )
+    return render_template("index.jinja", session={ "user": session["username"] })
 
 @app.errorhandler(404)
 def not_found(error):
@@ -61,6 +59,12 @@ def after_request(res):
 @app.before_request
 def before_request():
     pass
+
+# API
+@app.route("/api", methods=["GET"])
+@app.route("/api/<path:path>", methods=["GET"])
+def api_redirect(path = ''):
+    return redirect(url_for("index"))
 
 # Test routes
 @app.route("/api/test/user", methods=["GET", "POST"])

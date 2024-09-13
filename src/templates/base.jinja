@@ -1,14 +1,17 @@
-{% set items = [
+{% set rootpath = '/' + request.path.strip('/').split('/')[0] %}
+{% set navpaths = [
   { "name": "Dashboard", "path": "/" },
   { "name": "Settings",  "path": "/settings" }
 ] %}
+
+{% set pathtitle = navpaths|selectattr("path", "equalto", rootpath)|map(attribute="name")|first %}
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <title>{{ items|selectattr("path", "equalto", rootpath)|map(attribute="name")|first }} - Budget manager</title>
+  <title>{{ title if title else pathtitle if pathtitle else "undefined" }} - Budget manager</title>
 
   <!-- METADATA BLOCK -->
   <meta name="referrer" content="no-referrer">

@@ -1,6 +1,6 @@
 <div class="sidebar">
   <ul class="navbar">
-    {% for item in items %}
+    {% for item in navpaths %}
       <li class="navbar-item{% if rootpath == item.path %} active{% endif %}">
         <a href="{{ item.path }}">{{ item.name }}</a>
       </li>

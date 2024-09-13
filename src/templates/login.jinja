@@ -7,7 +7,9 @@
   <form method="POST" action="/login">
     <input type="text" name="username" required="true" placeholder="Username" autofocus>
     <input type="password" name="password" required="true" placeholder="Password" minlength="3">
-    {% if error %}<p id="inform">Invalid credentials!</p>{% endif %}
+    {% for message in get_flashed_messages() %}
+      <p class="inform">{{ message }}</p>
+    {% endfor %}
     <hr>
     <input type="submit" value="Login">
   </form>
