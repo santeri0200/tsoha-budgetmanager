@@ -9,10 +9,7 @@ from sqlalchemy.sql import text
 from typing import Optional
 
 from os import getenv
-from datetime import date
-
-# CONSTS
-NULL = "NULL"
+from datetime import date as datetime
 
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URI")
 db = SQLAlchemy(app)
@@ -53,7 +50,7 @@ def create_user(username: str, password: str) -> Optional[str]:
     return res
 
 # ASSETS
-def get_asset(userid: int, type: str) -> Optional[tuple[int, date, float]]:
+def get_asset(userid: int, type: str) -> Optional[tuple[int, datetime, float]]:
     assert userid is not None, "`userid` must be set when fetching an asset"
     assert type   is not None, "`type` must be set when fetching an asset"
 
@@ -62,7 +59,7 @@ def get_asset(userid: int, type: str) -> Optional[tuple[int, date, float]]:
         {"userid": userid, "assettype": type}
     )
 
-def get_assetid(userid: int, type: str) -> Optional[tuple[int, date, float]]:
+def get_assetid(userid: int, type: str) -> Optional[tuple[int, datetime, float]]:
     assert userid is not None, "`userid` must be set when fetching an assetid"
     assert type   is not None, "`type` must be set when fetching an assetid"
 
@@ -74,9 +71,9 @@ def get_assetid(userid: int, type: str) -> Optional[tuple[int, date, float]]:
 def create_asset(
     username: str,
     type: str,
+    value: Optional[float],
     details: Optional[str] = None,
     date: Optional[str] = None,
-    value: Optional[float] = None,
 ) -> Optional[bool]:
     assert username is not None, "`username` must be set when creating an asset"
     assert type     is not None, "`type` must be set when creating an asset"
@@ -90,7 +87,7 @@ def create_asset(
                 ON CONFLICT DO NOTHING
                 RETURNING id
             """),
-            {"userid": userid, "type": type, "details": details or NULL}
+            {"userid": userid, "type": type, "details": details or None}
         ).fetchone()
     ):
         assert len(asset) == 1
@@ -102,8 +99,30 @@ def create_asset(
             text("""
                 INSERT INTO asset_history VALUES (:assetid, :date, :value)
             """),
-            {"assetid": assetid, "date": date or NULL, "value": value or 0.00}
+            {"assetid": assetid, "date": date or datetime(1970, 1, 1), "value": value or 0.00}
         )
 
         db.session.commit()
         return True
+
+def get_all_assets(userid: int) -> Optional[tuple[int, datetime, float]]:
+    assert userid is not None, "`userid` must be set when fetching an asset"
+
+    res = db.session.execute(
+        text("""
+            SELECT A.type, A.details, H.value
+            FROM assets A
+            LEFT JOIN asset_history H
+            ON A.id = H.assetid
+            AND H.date = (
+                SELECT MAX(date)
+                FROM asset_history
+                WHERE assetid = A.id
+            )
+            WHERE A.userid = :userid
+        """),
+        {"userid": userid}
+    ).fetchall()
+    print(res)
+
+    return res

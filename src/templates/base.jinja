@@ -1,6 +1,7 @@
 {% set rootpath = '/' + request.path.strip('/').split('/')[0] %}
 {% set navpaths = [
   { "name": "Dashboard", "path": "/" },
+  { "name": "Assets",    "path": "/assets" },
   { "name": "Settings",  "path": "/settings" }
 ] %}
 
@@ -23,6 +24,7 @@
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="{{ url_for('static', filename='colors.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block stylesheets %}{% endblock %}
 
   <!-- JAVASCRIPT -->
   <script>

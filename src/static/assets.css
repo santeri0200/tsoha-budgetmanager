@@ -1,0 +1,129 @@
+.panel-checkbox {
+  display: block;
+  width: 100%;
+
+  border-radius: 0.375em;
+
+  cursor: pointer;
+
+  transition-delay: 25ms;
+}
+
+.panel-checkbox>input {
+  display: none;
+}
+
+.panel-checkbox:hover {
+  background-image: var(--action-color-main);
+}
+
+.panel-checkbox:hover>p {
+  border: solid 2px transparent;
+}
+
+.panel-checkbox>p {
+  display: none;
+
+  width: 100%;
+  margin: 0;
+  padding: 1em 0;
+
+  text-align: center;
+
+  border-radius: inherit;
+  border: solid 2px var(--gray-border);
+  background: var(--dark-blue);
+  background-clip: padding-box;
+
+  transition-duration: 300ms;
+}
+
+.panel-checkbox+form {
+  display: none;
+}
+
+.panel-checkbox>.inactive {
+  display: block;
+}
+
+.panel-checkbox:has(:checked)+form {
+  display: block;
+}
+
+.panel-checkbox:has(:checked)>.active {
+  display: block;
+}
+
+.panel-checkbox:has(:checked)>.inactive {
+  display: none;
+}
+
+.creation-panel {
+  display: block;
+
+  padding: 1em max(1em, 10%);
+
+  border-radius: 0.375em;
+  border: 1px solid var(--gray-border);
+  background: var(--dark-blue);
+}
+
+.creation-panel>form {
+  margin-top: 2em;
+  padding: 1em;
+
+  border-radius: 0.375em;
+  border: 1px solid var(--gray-border);
+  background: var(--gray);
+}
+
+.creation-panel>.inform {
+  margin: 0.75em 0 0;
+  padding: 0;
+
+  text-align: center;
+  color: var(--text-bright);
+
+  animation: login-error 300ms 2;
+}
+
+.creation-panel>form>input {
+  margin-top: 0.75em;
+  padding: 0.75em 0.5em;
+  width: 100%;
+  height: 2.75em;
+
+  text-align: center;
+  font-size: 16px;
+
+  border: none;
+  border-radius: 0.375em;
+  background: var(--dark-blue);
+}
+
+.creation-panel>form>input::placeholder {
+  color: var(--text-toned);
+}
+
+.creation-panel>form>input[type="submit"] {
+  background: var(--action-color-main);
+}
+
+.creation-panel>form>label {
+  display: block;
+
+  margin-top: 0.75em;
+  padding-right: 1.5em;
+
+  text-align: end;
+  color: var(--red);
+  font-size: 0.75em;
+}
+
+.creation-panel>form>label>span {
+  color: var(--text-toned);
+}
+
+.creation-panel>form>label+input {
+  margin-top: 0;
+}

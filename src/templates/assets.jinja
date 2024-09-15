@@ -1,0 +1,61 @@
+{% extends "base.jinja" %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets.css') }}">
+{% endblock %}
+
+{% macro panel_content(rows=[]) %}
+  {# This could be done with tables, but I don't want to play with them. #}
+  <div class="panel-content">
+    <div class="panel-item-col">
+      <p>Name</p>
+      {% for item in rows %}
+        <p>{{ item[0] }}</p>
+      {% endfor %}
+    </div>
+    <div class="panel-item-col">
+      <p>Value</p>
+      {% for item in rows %}
+        <p>{{ item[2] }}</p>
+      {% endfor %}
+    </div>
+    <div class="panel-item-col panel-item-col-last">
+      <p>Description</p>
+      {% for item in rows %}
+        <!--
+          <p>Vitae qui rem consequuntur animi. Est quos neque vel voluptatibus non corporis. Ut esse iusto dolore sapiente voluptas doloremque.</p>
+        -->
+        <p>{{ item[1] }}</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% block content%}
+  {% include "nav.jinja" with context %}
+  <div class="content">
+    <div class="panel">
+      <div class="panel-content creation-panel">
+      <label class="panel-checkbox">
+        <p class="active">Cancel</p>
+        <p class="inactive">Add new asset</p>
+        <input type="checkbox">
+      </label>
+      <form action="/assets/add" method="POST">
+        <label>*<span>required</span></label>
+        <input type="text"   name="name"                   required="true" placeholder="Name">
+        <input type="text"   name="description"                            placeholder="Description">
+        <input type="date"   name="date"                                   placeholder="Date">
+        <label>*<span>required</span></label>
+        <input type="number" name="value"      step="0.01" required="true" placeholder="Initial value">
+        <input type="submit" value="Submit">
+      </form>
+      {% for message in get_flashed_messages() %}
+        <p class="inform">{{ message }}</p>
+      {% endfor %}
+      </div>
+
+      {{ panel_content(data) }}
+    </div>
+  </div>
+{% endblock %}

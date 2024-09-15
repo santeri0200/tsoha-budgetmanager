@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash
 
 # Tools
 from markupsafe import escape
-from datetime import date
+from datetime import date as datetime
 
 # LOGIN
 @app.route("/login", methods=["GET"])
@@ -47,6 +47,42 @@ def index(path = ''):
         return redirect(url_for("login"))
 
     return render_template("index.jinja", session={ "user": session["username"] })
+
+@app.route("/assets", methods=["GET"])
+@app.route("/assets/<path:path>", methods=["GET"])
+def assets(path = ''):
+    from modules.db import get_all_assets, get_userid
+
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    return render_template(
+       "assets.jinja",
+       session={ "user": session["username"] },
+       data=get_all_assets(get_userid(session["username"]))
+   )
+
+@app.route("/assets/add", methods=["POST"])
+def create_assets():
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    from modules.db import create_asset
+
+    name        = request.form["name"]
+    value       = request.form["value"]
+    description = request.form["description"]
+    date        = request.form["date"]
+
+    if not name or not value:
+        flash("Name and value required!")
+    
+    assert name, "Name is required for an asset"
+    assert value, "Value is required for an asset"
+    if not create_asset(session["username"], name, value, description, date):
+        flash("Asset already exists")
+
+    return redirect(url_for("assets"))
 
 @app.errorhandler(404)
 def not_found(error):
