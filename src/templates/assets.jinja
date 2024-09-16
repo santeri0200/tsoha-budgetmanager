@@ -25,7 +25,7 @@
         <!--
           <p>Vitae qui rem consequuntur animi. Est quos neque vel voluptatibus non corporis. Ut esse iusto dolore sapiente voluptas doloremque.</p>
         -->
-        <p>{{ item[1] }}</p>
+        <p>{{ item[1] or "" }}</p>
       {% endfor %}
     </div>
   </div>
@@ -35,26 +35,29 @@
   {% include "nav.jinja" with context %}
   <div class="content">
     <div class="panel">
-      <div class="panel-content creation-panel">
-      <label class="panel-checkbox">
-        <p class="active">Cancel</p>
-        <p class="inactive">Add new asset</p>
-        <input type="checkbox">
-      </label>
-      <form action="/assets/add" method="POST">
-        <label>*<span>required</span></label>
-        <input type="text"   name="name"                   required="true" placeholder="Name">
-        <input type="text"   name="description"                            placeholder="Description">
-        <input type="date"   name="date"                                   placeholder="Date">
-        <label>*<span>required</span></label>
-        <input type="number" name="value"      step="0.01" required="true" placeholder="Initial value">
-        <input type="submit" value="Submit">
-      </form>
-      {% for message in get_flashed_messages() %}
-        <p class="inform">{{ message }}</p>
-      {% endfor %}
+      <div class="container panel-content creation-panel">
+        <label class="panel-checkbox selection">
+          <p class="active">Cancel</p>
+          <p class="inactive">Add new asset</p>
+          <input type="checkbox">
+        </label>
+        <form action="/assets/add" method="POST">
+          <h1 class="container-header">Create an asset</h1>
+          <label>*<span>required</span></label>
+          <input type="text"   name="name"                   required="true" placeholder="Name">
+          <input type="text"   name="description"                            placeholder="Description">
+          <input type="date"   name="date"                                   placeholder="Date">
+          <label>*<span>required</span></label>
+          <input type="number" name="value"      step="0.01" required="true" placeholder="Initial value">
+          <input type="submit" class="selection" value="Submit">
+        </form>
+
+        {% for message in get_flashed_messages() %}
+          <p class="inform">{{ message }}</p>
+        {% endfor %}
       </div>
 
+      <hr class="content-divider">
       {{ panel_content(data) }}
     </div>
   </div>

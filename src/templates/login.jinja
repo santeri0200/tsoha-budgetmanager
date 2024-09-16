@@ -2,16 +2,16 @@
 
 {% block title %}Login{% endblock %}
 {% block content%}
-<div class="login{% if error %} error{% endif %}">
-  <h1>Login</h1>
-  <form method="POST" action="/login">
+<div class="login container{% if error %} error{% endif %}">
+  <h1 class="container-header">Login</h1>
+  <form class="container-form" method="POST" action="/login">
     <input type="text" name="username" required="true" placeholder="Username" autofocus>
     <input type="password" name="password" required="true" placeholder="Password" minlength="3">
     {% for message in get_flashed_messages() %}
       <p class="inform">{{ message }}</p>
     {% endfor %}
-    <hr>
-    <input type="submit" value="Login">
+    <hr class="content-divider">
+    <input type="submit" class="selection" value="Login">
   </form>
 </div>
 {% endblock %}

@@ -1,13 +1,125 @@
-body {
-  --text-bright: #FFF;
+:root {
   --text: #EBECD0;
+  --text-bright: #FFFFFF;
   --text-toned: #B5B6BB;
 
-  --dark-blue: #0E1015;
-  --gray: #13151B;
-  --gray-border: #202328;
+  --theme-hue: 340deg
+    /* 340 - 353 */
+    /* 17|374 ~ gold */
+  ;
+  --theme-saturation: 50%;
+  --theme-luminosity: 10%;
 
-  --red: #FE112D;
-  --dark-pink: #CE0F50;
+  --accent-hue: calc(var(--theme-hue) + 15deg);
+  --accent-saturation: 100%;
+  --accent-luminosity: 50%;
+  --accent-light-saturation: 85%;
+
+  --background-hue: calc(var(--theme-hue) - 90deg);
+  --background-saturation: calc(var(--theme-saturation) - 30%);
+  --background-luminosity: calc(var(--theme-luminosity) - 2.5%);
+
+  --background: hsl(var(--background-hue), var(--background-saturation), var(--background-luminosity));
+  --background-light: hsl(var(--background-hue), var(--background-saturation), var(--theme-luminosity));
+
+  --border-luminosity: calc(var(--theme-luminosity) + 5%);
+
+  --border-light: hsl(var(--background-hue), var(--background-saturation), var(--border-luminosity));
+
+  --red: hsl(var(--accent-hue), var(--accent-saturation), var(--accent-luminosity));
+  --dark-pink: hsl(var(--theme-hue), var(--accent-light-saturation), var(--accent-luminosity));
+
+  /* --background: #0E1015; */
+  /* --background-light: #13151B; */
+  /* --border-light: #202328; */
+
+  /* --red: #FE112D; */
+  /* --dark-pink: #CE0F50; */
   --action-color-main: linear-gradient(to bottom right, var(--red), var(--dark-pink));
+}
+
+:root {
+  --basic-border: 1px solid var(--border-light);
+  --basic-border-radius: 0.375em;
+
+  --transition-duration: 300ms;
+  --transition-delay: 25ms;
+}
+
+html {
+  margin: 0;
+}
+
+body {
+  font-size: 16px;
+  font-family: system-ui, -apple-system, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: var(--text);
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+label>input[type="checkbox"] {
+  display: none;
+}
+
+input::placeholder {
+  color: var(--text-toned);
+}
+
+input[type="submit"] {
+  background: var(--action-color-main);
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a:hover {
+  color: var(--text-bright);
+}
+
+@keyframes login-error {
+  0% {}
+
+  50% {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  100% {}
+}
+
+.inform {
+  text-align: center;
+  color: var(--text-bright);
+  animation: login-error var(--transition-duration) 2;
+}
+
+.selection {
+  cursor: pointer;
+}
+
+.container {
+  padding: 1.5em;
+
+  border: var(--basic-border);
+  border-radius: var(--basic-border-radius);
+}
+
+.container-header {
+  margin: 0.25em 0 0.75em;
+
+  color: var(--text-toned);
+  text-align: center;
+}
+
+.content-divider {
+  margin: 1em;
+
+  color: var(--text-toned);
 }

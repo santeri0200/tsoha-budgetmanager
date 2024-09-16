@@ -2,23 +2,16 @@
   display: block;
   width: 100%;
 
-  border-radius: 0.375em;
-
-  cursor: pointer;
-
-  transition-delay: 25ms;
-}
-
-.panel-checkbox>input {
-  display: none;
+  border-radius: var(--basic-border-radius);
+  background: linear-gradient(to bottom right, transparent, transparent);
 }
 
 .panel-checkbox:hover {
-  background-image: var(--action-color-main);
+  background: var(--action-color-main);
 }
 
 .panel-checkbox:hover>p {
-  border: solid 2px transparent;
+  border-color: transparent;
 }
 
 .panel-checkbox>p {
@@ -31,11 +24,12 @@
   text-align: center;
 
   border-radius: inherit;
-  border: solid 2px var(--gray-border);
-  background: var(--dark-blue);
+  border: var(--basic-border);
+  border-width: 2px;
+  background: var(--background);
   background-clip: padding-box;
 
-  transition-duration: 300ms;
+  transition: border-color var(--transition-duration);
 }
 
 .panel-checkbox+form {
@@ -61,30 +55,22 @@
 .creation-panel {
   display: block;
 
-  padding: 1em max(1em, 10%);
-
-  border-radius: 0.375em;
-  border: 1px solid var(--gray-border);
-  background: var(--dark-blue);
+  padding-right: max(1em, 15%);
+  padding-left: max(1em, 15%);
 }
 
 .creation-panel>form {
   margin-top: 2em;
   padding: 1em;
 
-  border-radius: 0.375em;
-  border: 1px solid var(--gray-border);
-  background: var(--gray);
+  border-radius: var(--basic-border-radius);
+  border: var(--basic-border);
+  background: var(--background-light);
 }
 
 .creation-panel>.inform {
   margin: 0.75em 0 0;
   padding: 0;
-
-  text-align: center;
-  color: var(--text-bright);
-
-  animation: login-error 300ms 2;
 }
 
 .creation-panel>form>input {
@@ -97,16 +83,7 @@
   font-size: 16px;
 
   border: none;
-  border-radius: 0.375em;
-  background: var(--dark-blue);
-}
-
-.creation-panel>form>input::placeholder {
-  color: var(--text-toned);
-}
-
-.creation-panel>form>input[type="submit"] {
-  background: var(--action-color-main);
+  border-radius: var(--basic-border-radius);
 }
 
 .creation-panel>form>label {

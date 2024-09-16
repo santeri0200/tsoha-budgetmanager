@@ -80,7 +80,7 @@ def create_assets():
     assert name, "Name is required for an asset"
     assert value, "Value is required for an asset"
     if not create_asset(session["username"], name, value, description, date):
-        flash("Asset already exists")
+        flash(f"Asset <b>{ name }</b> already exists")
 
     return redirect(url_for("assets"))
 
