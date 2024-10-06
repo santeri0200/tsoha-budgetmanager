@@ -17,16 +17,17 @@ Users may follow their spending habbits, create budgets and view their assets. T
   - [ ] Each receipt can be broken down line-by-line, product-by-product.
   - [ ] Each line item may have their sales and one-off markdowns added for more insights.
   - [ ] Each line item may be linked to another when comparing vendors.
-- [ ] Users may add assets and keep track of them.
-  - [ ] Users may view their assets and add new ones as they wish.
+- [x] Users may add assets and keep track of them.
+  - [x] Users may view their assets and add new ones as they wish.
     - [ ] Each asset has it's own history associated with it.
       - [ ] Users may view and interact with said history.
   - [ ] Users may delete their assets and the associated history.
-- [ ] Users may create groups.
-  - [ ] Users may review expenses in their own groups.
-  - [ ] Users may add expenses in their own groups (depending on their rights in the group).
-  - [ ] Users may mark their contributions towards expenses in their own groups.
-  - [ ] Users may create one-off groups for event and such.
+- [ ] ~~Users may create groups.~~
+  - [ ] ~~Users may review expenses in their own groups.~~
+  - [ ] ~~Users may add expenses in their own groups (depending on their rights in the group).~~
+  - [ ] ~~Users may mark their contributions towards expenses in their own groups.~~
+  - [ ] ~~Users may create one-off groups for event and such.~~
+- [ ] Users may adjust their interface preferences.
 
 ## Setup guide
 
