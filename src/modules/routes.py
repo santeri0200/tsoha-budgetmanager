@@ -8,7 +8,6 @@ from flask import redirect, url_for, render_template, flash
 # Tools
 from sqlalchemy.sql import text
 from datetime import date as datetime
-from werkzeug.security import check_password_hash
 
 # ~~~~~
 # ~~~~~
@@ -30,6 +29,7 @@ def default_post(path: str):
     _ = path
     abort(403)
 
+# Assets
 @app.route("/assets", methods=["GET"])
 def assets(path = ''):
     if "username" not in session:
@@ -39,7 +39,7 @@ def assets(path = ''):
     return render_template(
        "assets.jinja",
        session={ "user": session["username"] },
-       data=database.get_all_assets(userid)
+       data=database.get_user_assets(userid)
    )
 
 @app.route("/assets/add", methods=["POST"])
@@ -73,6 +73,7 @@ def create_assets():
 
     return redirect(url_for("assets"))
 
+# Session management
 @app.route("/login", methods=["GET"])
 def login():
     if "username" in session:
@@ -85,22 +86,34 @@ def handle_login():
     username = request.form["username"]
     password = request.form["password"]
 
-    hash = database.get_passwordhash(username)
-    if hash and check_password_hash(hash, password):
-        session["username"] = username
-        return redirect(url_for('index'))
-    
-    flash("Invalid credentials!")
-    return redirect(url_for('login'))
+    if (
+        type(username) != str
+        or not len(username)
+        or type(password) != str
+        or not len(password)
+    ):
+        flash("Invalid credentials!")
+        return redirect(url_for('login'))
+
+    userid = database.check_password(username, password)
+    if userid is None:
+        flash("No matching credentials!")
+        return redirect(url_for('login'))
+
+    session["userid"] = userid
+    session["username"] = username
+    return redirect(url_for('index'))
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
-    session.pop("username", None)
+    for item in list(session):
+        _ = session.pop(item, None)
+
     return redirect(url_for('login'))
 
 @app.route("/api/test/user", methods=["GET", "POST"])
 def add_test_user():
     if not database.create_user("test", "test"):
-        return "User already created <a href=\"/\">Go back</a>", 409
+        return f"User already created <a href=\"{url_for('index')}\">Go back</a>", 409
 
-    return "User created <a href=\"/\">Go back</a>", 200
+    return f"User created <a href=\"{url_for('index')}\">Go back</a>", 200

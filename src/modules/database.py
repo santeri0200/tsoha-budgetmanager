@@ -1,15 +1,23 @@
 from main import app
+
+# Database config
+from os import getenv
 from flask_sqlalchemy import SQLAlchemy
 
-from os import getenv
-
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URI", "postgresql:///tsoha")
-app.config["SQLALCHEMY_ECHO"] = True
+if app.debug:
+    app.config["SQLALCHEMY_ECHO"] = True
+
 db = SQLAlchemy(app)
 
+# Tools
 from sqlalchemy.sql import text
 from datetime import date as datetime
 from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+
+# ~~~~~
+# ~~~~~
 
 def get_userid(
     username: str,
@@ -36,30 +44,38 @@ def get_userid(
     assert hasattr(user, "id")
     return user.id
 
-def get_passwordhash(
-    username: str
-) -> str | None:
+def check_password(
+    username: str,
+    password: str,
+) -> bool:
     """
-        Get password corresponding to a username
+        
     """
 
-    assert username is not None, "`name` must be set when fetching credentials"
+    assert username is not None
+    assert password is not None
 
     res = db.session.execute(
         text("""
-            SELECT password
-            FROM users
+            SELECT id, password
+            FROM Users
             WHERE username = :username
-        """),
-        {"username": username}
+         """),
+        {
+            "username": username
+        }
     )
 
-    user = res.fetchone()
+    user = res.fetchone()    
 
     if user:
-        password: str = user[0]
-        return password
+        assert hasattr(user, "id")
+        assert hasattr(user, "password")
 
+        if check_password_hash(user.password, password):
+            return user.id
+
+    # If username is not found or password doesn't match
     return None
 
 def create_user(
@@ -130,47 +146,70 @@ def create_asset(
 
     # Asset deletion is cascading, so there should never be a history item
     # laying around, even if the asset 
+    #
+    # The call below already commits the changes on success
+    # and rollbacks on error
+    return create_assethistory_entry(assetid, date or datetime.today(), value)
+
+def create_assethistory_entry(
+    assetid: int,
+    date: str,
+    value: int,
+) -> bool:
     res = db.session.execute(
         text("""
             INSERT INTO AssetHistory
             VALUES (:assetid, :date, :value)
+            RETURNING TRUE as success
         """),
         {
             "assetid": assetid,
-            "date": date or datetime.today(),
+            "date": date,
             "value": value,
         }
     )
 
-    print(res)
+    success = res.fetchone()
+    if success:
+        db.session.commit()
+        return True
+    else:
+        db.session.rollback()
+        return False
+    
 
-    db.session.commit()
-    return True
-
-def get_all_assets(
-    userid: int
+def get_user_assets(
+    userid: int,
+    limit: int | None = None
 ) -> list[tuple[int, datetime, float]]:
     """
-        Gets all user assets with the most resent value from the asset history.
+        Gets all or limit (amount of) user assets with the most resent value from the asset history.
     """
 
     assert userid is not None, "`userid` must be set when fetching an asset"
 
+    res = None
+    sql = """
+        SELECT A.name, A.details, AH.value
+        FROM Assets A
+        LEFT JOIN AssetHistory AH
+        ON A.id = AH.assetid
+        AND AH.date = (
+            SELECT MAX(date)
+            FROM AssetHistory
+            WHERE assetid = A.id
+        )
+        WHERE A.userid = :userid
+    """
+
+    if limit:
+        sql += "LIMIT :limit"
+
     res = db.session.execute(
-        text("""
-            SELECT A.name, A.details, AH.value
-            FROM Assets A
-            LEFT JOIN AssetHistory AH
-            ON A.id = AH.assetid
-            AND AH.date = (
-                SELECT MAX(date)
-                FROM AssetHistory
-                WHERE assetid = A.id
-            )
-            WHERE A.userid = :userid
-        """),
+        text(sql),
         {
             "userid": userid,
+            "limit": limit,
         }
     )
 
