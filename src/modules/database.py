@@ -19,31 +19,6 @@ from werkzeug.security import check_password_hash
 # ~~~~~
 # ~~~~~
 
-def get_userid(
-    username: str,
-) -> int:
-    """
-        Get userid corresponding to a username
-    """
-
-    assert username is not None, "`username` must be set when fetching a userid"
-
-    res = db.session.execute(
-        text("""
-            SELECT id
-            FROM users
-            WHERE username = :username
-        """),
-        {
-            "username": username,
-        }
-    )
-
-    user = res.fetchone()
-
-    assert hasattr(user, "id")
-    return user.id
-
 def check_password(
     username: str,
     password: str,

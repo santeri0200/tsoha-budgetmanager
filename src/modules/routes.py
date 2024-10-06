@@ -14,7 +14,7 @@ from datetime import date as datetime
 
 @app.route("/", methods=["GET"])
 def index():
-    if "username" not in session:
+    if "userid" not in session:
         return redirect(url_for("login"))
 
     return render_template("index.jinja", session={ "user": session["username"] })
@@ -32,21 +32,20 @@ def default_post(path: str):
 # Assets
 @app.route("/assets", methods=["GET"])
 def assets(path = ''):
-    if "username" not in session:
+    if "userid" not in session:
         return redirect(url_for("login"))
 
-    userid = database.get_userid(session["username"])
     return render_template(
        "assets.jinja",
        session={ "user": session["username"] },
-       data=database.get_user_assets(userid)
+       data=database.get_user_assets(session["userid"])
    )
 
 @app.route("/assets/add", methods=["POST"])
 def create_assets():
     is_invalid = False
     
-    if "username" not in session:
+    if "userid" not in session:
         return redirect(url_for("login"))
 
     assetname  : str | None = request.form.get("assetname"  , None)  # type: ignore[annotation-unchecked]
@@ -67,8 +66,7 @@ def create_assets():
         is_invalid = True
 
     if not is_invalid:
-        userid = database.get_userid(session["username"])
-        if not database.create_asset(userid, assetname, value, description, date):
+        if not database.create_asset(session["userid"], assetname, value, description, date):
             flash(f"Asset <b>{ assetname }</b> already exists")
 
     return redirect(url_for("assets"))
@@ -76,7 +74,7 @@ def create_assets():
 # Session management
 @app.route("/login", methods=["GET"])
 def login():
-    if "username" in session:
+    if "userid" in session:
         return redirect(url_for("index"))
 
     return render_template("login.jinja", title="Login")
