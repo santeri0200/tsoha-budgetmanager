@@ -8,6 +8,15 @@ CREATE TABLE IF NOT EXISTS Users (
                                         -- otherwise the algorithm has a collision.
 );
 
+CREATE TABLE IF NOT EXISTS Preferences (
+    userid INT NOT NULL
+        REFERENCES Users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    screenname TEXT
+);
+
 CREATE TABLE IF NOT EXISTS Assets (
     id SERIAL PRIMARY KEY,
     userid INT NOT NULL

@@ -17,7 +17,7 @@ def index():
     if "userid" not in session:
         return redirect(url_for("login"))
 
-    return render_template("index.jinja", session={ "user": session["username"] })
+    return render_template("index.jinja", session={ "user": session["screenname"] })
 
 @app.route("/<path:path>", methods=["GET"])
 def default_get(path: str):
@@ -37,7 +37,7 @@ def assets(path = ''):
 
     return render_template(
        "assets.jinja",
-       session={ "user": session["username"] },
+       session={ "user": session["screenname"] },
        data=database.get_user_assets(session["userid"])
    )
 
@@ -71,6 +71,15 @@ def create_assets():
 
     return redirect(url_for("assets"))
 
+# Preferences
+@app.route("/preferences", methods=["GET"])
+def preferences():
+    if "userid" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("preferences.jinja", session={ "user": session["screenname"] })
+    
+
 # Session management
 @app.route("/login", methods=["GET"])
 def login():
@@ -99,7 +108,11 @@ def handle_login():
         return redirect(url_for('login'))
 
     session["userid"] = userid
-    session["username"] = username
+    session["screenname"] = username
+    preferences = database.get_user_preferences(userid)
+    for pref in preferences:
+        session[pref] = preferences[pref] or session[pref] or None
+
     return redirect(url_for('index'))
 
 @app.route("/logout", methods=["GET", "POST"])

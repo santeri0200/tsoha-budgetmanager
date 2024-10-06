@@ -53,6 +53,27 @@ def check_password(
     # If username is not found or password doesn't match
     return None
 
+def get_user_preferences(
+    userid: int,
+) -> dict[any]:
+    assert userid is not None
+
+    res = db.session.execute(
+        text("""
+            SELECT screenname
+            FROM Preferences
+            WHERE userid = :userid
+        """),
+        {
+            "userid": userid
+        }
+    )
+
+    preferences = res.fetchone()
+    assert preferences is not None, "`Preferences` row entry is added and deleted along side the user. This should never fail."
+
+    return preferences._asdict()
+
 def create_user(
     username: str,
     password: str,
@@ -69,7 +90,7 @@ def create_user(
             INSERT INTO Users (username, password)
             VALUES (:username, :password)
             ON CONFLICT DO NOTHING
-            RETURNING TRUE as success
+            RETURNING id
         """),
         {
             "username": username,
@@ -78,10 +99,28 @@ def create_user(
     )
 
     user = res.fetchone()
-    if user:
-        db.session.commit()
+    if not hasattr(user, "id"):
+        db.session.rollback()
+        return False
 
-    return hasattr(user, "success")
+    res = db.session.execute(
+        text("""
+            INSERT INTO Preferences (userid)
+            VALUES (:userid)
+            RETURNING TRUE as success
+        """),
+        {
+            "userid": user.id,
+        }
+    )
+
+    prefs = res.fetchone()
+    if not hasattr(prefs, "success"):
+        db.session.rollback()
+        return False
+
+    db.session.commit()
+    return True
 
 def create_asset(
     userid : int,

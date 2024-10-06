@@ -1,8 +1,8 @@
 {% set rootpath = '/' + request.path.strip('/').split('/')[0] %}
 {% set navpaths = [
-  { "name": "Dashboard", "path": "/" },
-  { "name": "Assets",    "path": "/assets" },
-  { "name": "Settings",  "path": "/settings" }
+  { "name": "Dashboard",    "path": "/" },
+  { "name": "Assets",       "path": "/assets" },
+  { "name": "Preferences",  "path": "/preferences" }
 ] %}
 
 {% set pathtitle = navpaths|selectattr("path", "equalto", rootpath)|map(attribute="name")|first %}
