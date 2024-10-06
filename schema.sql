@@ -1,50 +1,83 @@
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL NOT NULL,
-    name TEXT NOT NULL,
-    password CHARACTER(162) NOT NULL,     /* HASHED `password` */
+CREATE TABLE IF NOT EXISTS Users (
+    id SERIAL PRIMARY KEY,
+    username TEXT NOT NULL,
+    password CHARACTER(162) NOT NULL,   -- Hashed password
 
-    PRIMARY KEY (id),
-
-    UNIQUE(id),
-    UNIQUE(name),                         /* Usernames should always be UNIQUE. */
-    UNIQUE(password)                      /* Passwords should always be UNIQUE. */
+    UNIQUE(username),
+    UNIQUE(password)                    -- Passwords should be unique,
+                                        -- otherwise the algorithm has a collision.
 );
 
-CREATE TABLE IF NOT EXISTS assets (
-    id SERIAL NOT NULL,          /* This key is used to refer into asset history
-                                    otherwise unused. */
-    userid INT NOT NULL,
-    type TEXT NOT NULL,          /* ASSET TYPE */
-    details TEXT,                /* EXTRA DETAILS */
+CREATE TABLE IF NOT EXISTS Assets (
+    id SERIAL PRIMARY KEY,
+    userid INT NOT NULL
+        REFERENCES Users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    name TEXT NOT NULL,     -- Asset name
+    details TEXT,           -- Extra details
 
-    PRIMARY KEY (id),
-    FOREIGN KEY (userid) REFERENCES users(id)
-        ON DELETE CASCADE        /* DELETE ENTRY ON `user` DELETION */
-        ON UPDATE CASCADE,       /* UPDATE `userid` ON `user` UPDATE */
-
-    UNIQUE(id),
-    UNIQUE(userid, type)         /* EACH `userid` HAS UNIQUE `type`s */
-                                 /* This constrain is good as it allows
-                                    us to add UNIQUE data into
-                                    the asset history. */
+    UNIQUE(userid, name)    -- Userids should have unique assets
 );
 
-CREATE TABLE IF NOT EXISTS asset_history (
-    assetid INT NOT NULL,
-    date DATE,                       /* EVAL DATE (no timestamp) */
-                                     /* This allows us to use "indefinite"
-                                        dates, when users don't have
-                                        defined starting date.
-                                        For example: this is the first
-                                        time they log this info. */
-    value NUMERIC(12, 2) NOT NULL,   /* MAX 9_999_999_999.99 */
-                                     /* I don't think anyone using this app
-                                        will ever have more than 10 billion
-                                        invested into a single asset. */
+CREATE TABLE IF NOT EXISTS AssetHistory (
+    assetid INT
+        REFERENCES Assets(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    date DATE NOT NULL,
+    value NUMERIC(12, 2) NOT NULL,  /* Max 9_999_999_999.99
+                                       I don't think anyone using this app
+                                       will ever have more than 10 billion
+                                       invested into a single asset. */
 
-    FOREIGN KEY (assetid) REFERENCES assets(id)
-        ON DELETE CASCADE            /* DELETE ENTRY ON asset DELETION */
-        ON UPDATE CASCADE,           /* UPDATE `assetid` ON `asset` UPDATE */
-
-    UNIQUE(assetid, date)
+    UNIQUE(assetid, date)           -- Assets should only have one value per date
 ) WITH (fillfactor=90);
+
+/* Receipts have line entries, each line entry is a item.
+   Each item can be categorised outside of it's original category. */
+
+CREATE TABLE IF NOT EXISTS ItemCategories (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    parent INT NULL                     -- Used if this is a subcategory
+        REFERENCES ItemCategories(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Items (
+    id SERIAL PRIMARY KEY,
+    categoryid INT NOT NULL
+        REFERENCES ItemCategories(id)
+        DEFAULT 0,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Receipts (
+    id SERIAL PRIMARY KEY,
+    assetid INT NULL
+        REFERENCES Assets(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    name TEXT NOT NULL,
+    date DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ReceiptLineEntry (
+    id SERIAL PRIMARY KEY,
+    receiptid INT NOT NULL
+        REFERENCES Receipts(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    itemid INT NOT NULL
+        REFERENCES Items(id)
+        ON DELETE RESTRICT  /* We don't want to have dangling references,
+                               it is safer to set this value to `0` instead
+                               of nullifying it. */
+        ON UPDATE CASCADE,
+    customname TEXT NULL    /* Should be used if original itemid dies,
+                               otherwise users are free to use this
+                               field if no corresponding item is found. */
+
+);

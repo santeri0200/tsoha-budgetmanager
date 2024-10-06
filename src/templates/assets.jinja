@@ -44,11 +44,11 @@
         <form action="/assets/add" method="POST">
           <h1 class="container-header">Create an asset</h1>
           <label>*<span>required</span></label>
-          <input type="text"   name="name"                   required="true" placeholder="Name">
-          <input type="text"   name="description"                            placeholder="Description">
-          <input type="date"   name="date"                                   placeholder="Date">
+          <input type="text"   name="assetname"   placeholder="Name"          required="true">
+          <input type="text"   name="description" placeholder="Description">
+          <input type="date"   name="date"        placeholder="Date">
           <label>*<span>required</span></label>
-          <input type="number" name="value"      step="0.01" required="true" placeholder="Initial value">
+          <input type="number" name="value"       placeholder="Initial value" required="true" step="0.01">
           <input type="submit" class="selection" value="Submit">
         </form>
 

@@ -9,6 +9,7 @@ db = SQLAlchemy(app)
 
 from sqlalchemy.sql import text
 from datetime import date as datetime
+from werkzeug.security import generate_password_hash
 
 def get_userid(
     username: str,
@@ -23,7 +24,7 @@ def get_userid(
         text("""
             SELECT id
             FROM users
-            WHERE name = :username
+            WHERE username = :username
         """),
         {
             "username": username,
@@ -48,7 +49,7 @@ def get_passwordhash(
         text("""
             SELECT password
             FROM users
-            WHERE name = :username
+            WHERE username = :username
         """),
         {"username": username}
     )
@@ -74,7 +75,7 @@ def create_user(
 
     res = db.session.execute(
         text("""
-            INSERT INTO Users (name, password)
+            INSERT INTO Users (username, password)
             VALUES (:username, :password)
             ON CONFLICT DO NOTHING
             RETURNING TRUE as success
@@ -103,12 +104,12 @@ def create_asset(
     """
 
     assert userid is not None, "`userid` must be set when creating an asset"
-    assert name   is not None, "`type` must be set when creating an asset"
+    assert name   is not None, "`name` must be set when creating an asset"
     assert value  is not None, "`value` must be set when createing an asset"
 
     res = db.session.execute(
         text("""
-            INSERT INTO Assets (userid, type, details)
+            INSERT INTO Assets (userid, name, details)
             VALUES (:userid, LOWER(:name), :details)
             ON CONFLICT DO NOTHING
             RETURNING id
@@ -131,12 +132,12 @@ def create_asset(
     # laying around, even if the asset 
     res = db.session.execute(
         text("""
-            INSERT INTO asset_history
+            INSERT INTO AssetHistory
             VALUES (:assetid, :date, :value)
         """),
         {
             "assetid": assetid,
-            "date": date or None,
+            "date": date or datetime.today(),
             "value": value,
         }
     )
@@ -157,13 +158,13 @@ def get_all_assets(
 
     res = db.session.execute(
         text("""
-            SELECT A.type, A.details, AH.value
-            FROM assets A
-            LEFT JOIN asset_history AH
+            SELECT A.name, A.details, AH.value
+            FROM Assets A
+            LEFT JOIN AssetHistory AH
             ON A.id = AH.assetid
             AND AH.date = (
                 SELECT MAX(date)
-                FROM asset_history
+                FROM AssetHistory
                 WHERE assetid = A.id
             )
             WHERE A.userid = :userid

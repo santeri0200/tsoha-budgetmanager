@@ -100,9 +100,7 @@ def logout():
 
 @app.route("/api/test/user", methods=["GET", "POST"])
 def add_test_user():
-    from modules.users import create_user
-
-    if not create_user("test", "test"):
+    if not database.create_user("test", "test"):
         return "User already created <a href=\"/\">Go back</a>", 409
 
     return "User created <a href=\"/\">Go back</a>", 200
