@@ -191,6 +191,10 @@ body {
   width: 100%;
 }
 
+.panel-content>.panel-item-col:first-child>p {
+  text-transform: capitalize;
+}
+
 .panel-item-col>p {
   box-sizing: content-box;
   position: relative;

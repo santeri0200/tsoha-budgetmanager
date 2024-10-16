@@ -73,6 +73,10 @@
   padding: 0;
 }
 
+.creation-panel>.inform>b {
+  text-transform: capitalize;
+}
+
 .creation-panel>form>input {
   margin-top: 0.75em;
   padding: 0.75em 0.5em;
