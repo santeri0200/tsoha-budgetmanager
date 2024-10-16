@@ -49,6 +49,7 @@
           <label>*<span>required</span></label>
           <input type="number" name="value"       placeholder="Initial value" required="true" step="0.01">
           <input type="submit" class="selection" value="Submit">
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
 
         {% for message in get_flashed_messages() %}

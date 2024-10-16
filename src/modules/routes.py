@@ -3,20 +3,42 @@ from . import database
 
 # Flask
 from flask import request, session
-from flask import redirect, url_for, render_template, flash
+from flask import url_for, render_template, flash
+from flask import redirect, abort
 
 # Tools
 from sqlalchemy.sql import text
 from datetime import date as datetime
+from functools import wraps
+import secrets
+
+# CSRF mitigation tactic
+app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+
+def authenticate(f):
+    @wraps(f)
+    def wrapper(*args):
+        if "userid" not in session:
+            return redirect(url_for("login"))
+
+        return f(*args)
+    return wrapper
+
+def check_csrf(f):
+    @wraps(f)
+    def wrapper(*args):
+        if "csrf_token" not in session or session["csrf_token"] != request.form.get("csrf_token", request.args.get("csrf_token", None)):
+            return abort(403)
+
+        return f(*args)
+    return wrapper
 
 # ~~~~~
 # ~~~~~
 
 @app.route("/", methods=["GET"])
+@authenticate
 def index():
-    if "userid" not in session:
-        return redirect(url_for("login"))
-
     return render_template(
         "index.jinja",
         session=session,
@@ -35,10 +57,8 @@ def default_post(path: str):
 
 # Assets
 @app.route("/assets", methods=["GET"])
+@authenticate
 def assets(path = ''):
-    if "userid" not in session:
-        return redirect(url_for("login"))
-
     return render_template(
        "assets.jinja",
        session=session,
@@ -47,11 +67,10 @@ def assets(path = ''):
    )
 
 @app.route("/assets/add", methods=["POST"])
+@authenticate
+@check_csrf
 def create_assets():
     is_invalid = False
-    
-    if "userid" not in session:
-        return redirect(url_for("login"))
 
     assetname  : str | None = request.form.get("assetname"  , None)  # type: ignore[annotation-unchecked]
     description: str | None = request.form.get("description", None)  # type: ignore[annotation-unchecked]
@@ -78,10 +97,8 @@ def create_assets():
 
 # Preferences
 @app.route("/preferences", methods=["GET"])
+@authenticate
 def preferences():
-    if "userid" not in session:
-        return redirect(url_for("login"))
-
     return render_template(
         "preferences.jinja",
         session=session,
@@ -95,12 +112,17 @@ def login():
     if "userid" in session:
         return redirect(url_for("index"))
 
+    # Generate temporary CSRF token
+    session["csrf_token"] = secrets.token_hex(16)
+
     return render_template(
         "login.jinja",
-        title="Login"
+        title="Login",
+        session={"csrf_token": session["csrf_token"]}
     )
 
 @app.route("/login", methods=["POST"])
+@check_csrf
 def handle_login():    
     username = request.form["username"]
     password = request.form["password"]
@@ -119,6 +141,7 @@ def handle_login():
         flash("No matching credentials!")
         return redirect(url_for('login'))
 
+    session["csrf_token"] = secrets.token_hex(16)
     session["userid"] = userid
     session["screenname"] = username
     preferences = database.get_user_preferences(userid)
@@ -127,7 +150,7 @@ def handle_login():
 
     return redirect(url_for('index'))
 
-@app.route("/logout", methods=["GET", "POST"])
+@app.route("/logout", methods=["GET"])
 def logout():
     for item in list(session):
         _ = session.pop(item, None)
