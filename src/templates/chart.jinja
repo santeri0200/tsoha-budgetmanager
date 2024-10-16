@@ -1,0 +1,80 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+<canvas id="myChart" style="width:100%;"></canvas>
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0];
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Test data',
+                data: [
+                    {x: '2024-01-01', y: 100},
+                    {x: '2024-01-15', y: 100},
+                    {x: '2024-03-01', y: 200},
+                ],
+                tension: 0.1,
+                borderColor: 'rgb(75, 192, 192)',
+                fill: true,
+                backgroundColor: (ctx) => {
+                    const chart = ctx.chart;
+
+                    const gradient = chart.ctx.createLinearGradient(0, 0, 0, chart.height);
+                    gradient.addColorStop(0, "rgba(75, 192, 192, 0.2)");
+                    gradient.addColorStop(1, "rgba(75, 192, 192, 0)");
+
+                    return gradient;
+                },
+                spanGaps: true,
+            }, {
+                label: 'Test data',
+                data: [
+                    {x: '2024-02-01', y: 200},
+                ],
+                tension: 0.1,
+                borderColor: 'rgb(192, 75, 192)',
+                fill: true,
+                backgroundColor: (ctx) => {
+                    const chart = ctx.chart;
+
+                    const gradient = chart.ctx.createLinearGradient(0, 0, 0, chart.height);
+                    gradient.addColorStop(0, "rgba(192, 75, 192, 0.2)");
+                    gradient.addColorStop(1, "rgba(192, 75, 192, 0)");
+
+                    return gradient;
+                },
+                spanGaps: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'month',
+                        tooltipFormat: 'dd-MMM-yyyy',
+                        displayFormats: {
+                            month: 'MMM yyyy'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Value'
+                    }
+                }
+            },
+        }
+    });
+</script>
