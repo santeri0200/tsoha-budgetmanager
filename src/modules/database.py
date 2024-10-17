@@ -1,3 +1,7 @@
+"""
+    Application database logic.
+"""
+
 from main import app
 
 # Database config
@@ -24,7 +28,7 @@ def check_password(
     password: str,
 ) -> bool:
     """
-        
+        Check password against a hash from a row matching the username.
     """
 
     assert username is not None
@@ -41,7 +45,7 @@ def check_password(
         }
     )
 
-    user = res.fetchone()    
+    user = res.fetchone()
 
     if user:
         assert hasattr(user, "id")
@@ -56,6 +60,10 @@ def check_password(
 def get_user_preferences(
     userid: int,
 ) -> dict[any]:
+    """
+        asd
+    """
+
     assert userid is not None
 
     res = db.session.execute(
@@ -70,7 +78,7 @@ def get_user_preferences(
     )
 
     preferences = res.fetchone()
-    assert preferences is not None, "`Preferences` row entry is added and deleted along side the user. This should never fail."
+    assert preferences is not None, "`Preferences` row entry is added and deleted along side the user. This should never fail." # pylint: disable=line-too-long
 
     return preferences._asdict()
 
@@ -159,7 +167,7 @@ def create_asset(
     assetid = asset.id
 
     # Asset deletion is cascading, so there should never be a history item
-    # laying around, even if the asset 
+    # laying around, even if the asset
     #
     # The call below already commits the changes on success
     # and rollbacks on error
@@ -170,6 +178,10 @@ def create_assethistory_entry(
     date: str,
     value: int,
 ) -> bool:
+    """
+        asd
+    """
+
     res = db.session.execute(
         text("""
             INSERT INTO AssetHistory
@@ -187,10 +199,9 @@ def create_assethistory_entry(
     if success:
         db.session.commit()
         return True
-    else:
-        db.session.rollback()
-        return False
-    
+
+    db.session.rollback()
+    return False
 
 def get_user_assets(
     userid: int,

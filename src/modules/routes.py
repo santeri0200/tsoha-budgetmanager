@@ -1,5 +1,9 @@
+"""
+    Application routing logic.
+"""
+
 from main import app
-from . import database
+from modules import database
 
 # Flask
 from flask import request, session
@@ -7,7 +11,6 @@ from flask import url_for, render_template, flash
 from flask import redirect, abort
 
 # Tools
-from sqlalchemy.sql import text
 from datetime import date as datetime
 from functools import wraps
 import secrets
@@ -27,7 +30,8 @@ def authenticate(f):
 def check_csrf(f):
     @wraps(f)
     def wrapper(*args):
-        if "csrf_token" not in session or session["csrf_token"] != request.form.get("csrf_token", request.args.get("csrf_token", None)):
+        csrf_token = request.form.get("csrf_token", None) or request.args.get("csrf_token", None)
+        if "csrf_token" not in session or session["csrf_token"] != csrf_token:
             return abort(403)
 
         return f(*args)
@@ -58,7 +62,7 @@ def default_post(path: str):
 # Assets
 @app.route("/assets", methods=["GET"])
 @authenticate
-def assets(path = ''):
+def assets():
     return render_template(
        "assets.jinja",
        session=session,
@@ -70,21 +74,22 @@ def assets(path = ''):
 @authenticate
 @check_csrf
 def create_assets():
-    is_invalid = False
-
     assetname  : str | None = request.form.get("assetname"  , None)  # type: ignore[annotation-unchecked]
     description: str | None = request.form.get("description", None)  # type: ignore[annotation-unchecked]
     date       : str | None = request.form.get("date"       , None)  # type: ignore[annotation-unchecked]
     value      : str | None = request.form.get("value"      , None)  # type: ignore[annotation-unchecked]
 
+    is_invalid = False
+
     try:
         float(value)
     except ValueError:
         flash("Value must be convertable to a float")
-        is_invalid = True        
+        is_invalid = True
 
     try:
-        if date: datetime.fromisoformat(date)
+        if date:
+            datetime.fromisoformat(date)
     except ValueError:
         flash("Date must be ISO formated")
         is_invalid = True
@@ -98,13 +103,13 @@ def create_assets():
 # Preferences
 @app.route("/preferences", methods=["GET"])
 @authenticate
-def preferences():
+def user_preferences():
     return render_template(
         "preferences.jinja",
         session=session,
         usenav=True
     )
-    
+
 
 # Session management
 @app.route("/login", methods=["GET"])
@@ -123,15 +128,13 @@ def login():
 
 @app.route("/login", methods=["POST"])
 @check_csrf
-def handle_login():    
-    username = request.form["username"]
-    password = request.form["password"]
+def handle_login():
+    username = request.form.get("username", None)
+    password = request.form.get("password", None)
 
     if (
-        type(username) != str
-        or not len(username)
-        or type(password) != str
-        or not len(password)
+        not isinstance(username, str) or not username or
+        not isinstance(password, str) or not password
     ):
         flash("Invalid credentials!")
         return redirect(url_for('login'))

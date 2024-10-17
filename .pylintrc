@@ -1,0 +1,8 @@
+[FORMAT]
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=cyclic-import,
+		wrong-import-order,
+		wrong-import-position,
+        missing-function-docstring,
