@@ -132,6 +132,10 @@ body {
   padding: 0;
 }
 
+.capitalise {
+  text-transform: capitalize;
+}
+
 /* DASHBOARD */
 .content {
   flex: 1;
@@ -188,10 +192,6 @@ body {
 .panel-content>.panel-item-col:last-child {
   max-width: none;
   width: 100%;
-}
-
-.panel-content>.panel-item-col:first-child>p {
-  text-transform: capitalize;
 }
 
 .panel-item-col>p {

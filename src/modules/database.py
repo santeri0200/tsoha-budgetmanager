@@ -216,7 +216,7 @@ def get_user_assets(
 
     res = None
     sql = """
-        SELECT A.name, A.details, AH.value
+        SELECT A.name, A.details as description, AH.value
         FROM Assets A
         LEFT JOIN AssetHistory AH
         ON A.id = AH.assetid

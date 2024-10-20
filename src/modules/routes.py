@@ -46,7 +46,9 @@ def index():
     return render_template(
         "index.jinja",
         session=session,
-        usenav=True
+        usenav=True,
+        assets=database.get_user_assets(session["userid"], 10),
+        receipts=database.get_user_receipts(session["userid"], 10),
     )
 
 @app.route("/<path:path>", methods=["GET"])

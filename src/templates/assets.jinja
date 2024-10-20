@@ -10,22 +10,19 @@
     <div class="panel-item-col">
       <p>Name</p>
       {% for item in rows %}
-        <p>{{ item[0] }}</p>
+        <p class="capitalise">{{ item["name"] }}</p>
       {% endfor %}
     </div>
     <div class="panel-item-col">
       <p>Value</p>
       {% for item in rows %}
-        <p>{{ item[2] }}</p>
+        <p>{{ item["value"] }}</p>
       {% endfor %}
     </div>
     <div class="panel-item-col panel-item-col-last">
       <p>Description</p>
       {% for item in rows %}
-        <!--
-          <p>Vitae qui rem consequuntur animi. Est quos neque vel voluptatibus non corporis. Ut esse iusto dolore sapiente voluptas doloremque.</p>
-        -->
-        <p>{{ item[1] or "" }}</p>
+        <p>{{ item["description"] }}</p>
       {% endfor %}
     </div>
   </div>
