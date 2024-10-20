@@ -1,0 +1,77 @@
+{% extends "base.jinja" %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets.css') }}">
+{% endblock %}
+
+{% macro panel_content(rows=[]) %}
+  {# This could be done with tables, but I don't want to play with them. #}
+  <div class="panel-content">
+    <div class="panel-item-col panel-button-col">
+      <p></p>
+      <form action="/receipt/{{ receiptid }}/delete" method="POST">
+        {% for item in rows %}
+          <div class="panel-button-wrapper">
+            <button name="delete" value="{{ item['id'] }}">&#x1f5d1;</button>
+          </div>
+        {% endfor %}
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      </form>
+    </div>
+    <div class="panel-item-col">
+      <p>Name</p>
+      {% for item in rows %}
+        <p>{{ item["name"] }}</p>
+      {% endfor %}
+    </div>
+    <div class="panel-item-col">
+      <p>Gategory</p>
+      {% for item in rows %}
+        <p>{{ item["category"] }}</p>
+      {% endfor %}
+    </div>
+    <div class="panel-item-col">
+      <p>Value</p>
+      {% for item in rows %}
+        <p>{{ item["value"] or "0.00" }}</p>
+      {% endfor %}
+    </div>
+    <div class="panel-item-col">
+      <p>Description</p>
+      {% for item in rows %}
+        <p>{{ item["description"] }}</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% block content%}
+  <div class="content">
+    <div class="panel">
+      <a href="{{ url_for('receipts') }}">Go back</a>
+      <div class="container panel-content creation-panel">
+        <label class="panel-checkbox selection">
+          <p class="active">Cancel</p>
+          <p class="inactive">Add new item to receipt</p>
+          <input type="checkbox">
+        </label>
+        <form action="/receipt/{{ receiptid }}/add" method="POST">
+          <h1 class="container-header">Add item to receipt</h1>
+          <label>*<span>required</span></label>
+          <input type="text"   name="itemname"    placeholder="Name"   required="true">
+          <input type="hidden" name="itemid"                           required="true">
+          <input type="text"   name="amount"      placeholder="Amount" required="true">
+          <input type="submit" class="selection" value="Submit">
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
+
+        {% for message in get_flashed_messages() %}
+          <p class="inform">{{ message }}</p>
+        {% endfor %}
+      </div>
+
+      <hr class="content-divider">
+      {{ panel_content(data) }}
+    </div>
+  </div>
+{% endblock %}

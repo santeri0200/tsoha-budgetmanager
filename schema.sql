@@ -55,22 +55,34 @@ CREATE TABLE IF NOT EXISTS ItemCategories (
         ON UPDATE CASCADE
 );
 
+-- Add default category for the `Items`.
+INSERT INTO ItemCategories (id, name, parent)
+    VALUES (0, 'Uncategorised', NULL)
+    ON CONFLICT (id) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS Items (
     id SERIAL PRIMARY KEY,
     categoryid INT NOT NULL
         REFERENCES ItemCategories(id)
         DEFAULT 0,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    description TEXT NULL,
+    value NUMERIC(12, 2) NULL
 );
 
 CREATE TABLE IF NOT EXISTS Receipts (
     id SERIAL PRIMARY KEY,
+    userid INT NOT NULL
+        REFERENCES Users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     assetid INT NULL
         REFERENCES Assets(id)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
     name TEXT NOT NULL,
-    date DATE NOT NULL
+    date DATE NOT NULL,
+    description TEXT NULL
 );
 
 CREATE TABLE IF NOT EXISTS ReceiptLineEntry (

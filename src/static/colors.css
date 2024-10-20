@@ -74,6 +74,10 @@ input[type="submit"] {
   background: var(--action-color-main);
 }
 
+input[readonly] {
+  background: var(--border-light);
+}
+
 a {
   text-decoration: none;
   cursor: pointer;

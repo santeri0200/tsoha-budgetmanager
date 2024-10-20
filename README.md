@@ -13,10 +13,12 @@ Users may follow their spending habbits, create budgets and view their assets. T
   - [ ] Asset value graphs.
   - [ ] Spendings graphs.
   - [ ] Projected value graphs.
-- [ ] Users may add their receipts to the system.
-  - [ ] Each receipt can be broken down line-by-line, product-by-product.
-  - [ ] Each line item may have their sales and one-off markdowns added for more insights.
-  - [ ] Each line item may be linked to another when comparing vendors.
+- [x] Users may add their receipts to the system.
+  - [x] Each receipt can be broken down line-by-line, product-by-product.
+    - [x] Each line item may be individually added or removed.
+  - [ ] ~~Each line item may have their sales and one-off markdowns added for more insights.~~
+  - [ ] ~~Each line item may be linked to another when comparing vendors.~~
+  - [x] Users may delete their receipts.
 - [x] Users may add assets and keep track of them.
   - [x] Users may view their assets and add new ones as they wish.
     - [ ] Each asset has it's own history associated with it.
