@@ -43,12 +43,19 @@ def check_csrf(f):
 @app.route("/", methods=["GET"])
 @authenticate
 def index():
+    assetdata = database.get_user_assets(session["userid"], 10)
+
+    chartdata = {asset.name: [
+        {"x": str(entry.date), "y": float(entry.value)} for entry in database.get_asset_history(session["userid"], asset.id)
+    ] for asset in assetdata}
+
     return render_template(
         "index.jinja",
         session=session,
         usenav=True,
-        assets=database.get_user_assets(session["userid"], 10),
+        assets=assetdata,
         receipts=database.get_user_receipts(session["userid"], 10),
+        chartdata=chartdata,
     )
 
 @app.route("/<path:path>", methods=["GET"])

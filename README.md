@@ -9,10 +9,10 @@ Users may follow their spending habbits, create budgets and view their assets. T
 - provide any kind of financial guidance for the users.
 
 ## Features
-- [ ] Graphs.
-  - [ ] Asset value graphs.
+- [x] Graphs.
+  - [x] Asset value graphs.
   - [ ] Spendings graphs.
-  - [ ] Projected value graphs.
+  - [ ] ~~Projected value graphs.~~
 - [x] Users may add their receipts to the system.
   - [x] Each receipt can be broken down line-by-line, product-by-product.
     - [x] Each line item may be individually added or removed.
