@@ -21,9 +21,9 @@ Users may follow their spending habbits, create budgets and view their assets. T
   - [x] Users may delete their receipts.
 - [x] Users may add assets and keep track of them.
   - [x] Users may view their assets and add new ones as they wish.
-    - [ ] Each asset has it's own history associated with it.
-      - [ ] Users may view and interact with said history.
-  - [ ] Users may delete their assets and the associated history.
+    - [x] Each asset has it's own history associated with it.
+      - [x] Users may view and interact with said history.
+  - [x] Users may delete their assets and the associated history.
 - [ ] ~~Users may create groups.~~
   - [ ] ~~Users may review expenses in their own groups.~~
   - [ ] ~~Users may add expenses in their own groups (depending on their rights in the group).~~

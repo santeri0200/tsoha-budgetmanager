@@ -174,6 +174,115 @@ def create_asset(
     # and rollbacks on error
     return create_assethistory_entry(assetid, date or datetime.today(), value)
 
+def user_owns_asset(
+    userid : int,
+    assetid: int,
+):
+    res = db.session.execute(
+        text(f"""
+             SELECT TRUE as success
+             FROM Assets
+             WHERE userid = :userid AND id = :assetid
+        """),
+        {
+            "userid": userid,
+            "assetid": assetid,
+        }
+    )
+
+    return res.fetchone() is not None
+
+def add_history_item_to_asset(
+    userid : int,
+    assetid: int,
+    value  : int,
+    date   : datetime | None,
+):
+    if not user_owns_asset(userid, assetid):
+        return False
+    
+    res = db.session.execute(
+        text(f"""
+            INSERT INTO AssetHistory (assetid, date, value)
+            VALUES (:assetid, :date, :value)
+            ON CONFLICT DO NOTHING
+            RETURNING TRUE as success
+        """),
+        {
+            "assetid": assetid,
+            "date": date or datetime.today(),
+            "value": value,
+        }
+    )
+
+    success = res.fetchone()
+    if not success:
+        db.session.rollback()
+        return False
+
+    db.session.commit()
+    return True
+
+def delete_asset(
+    userid : int,
+    assetid: int,
+) -> bool:
+    assert userid  is not None, "`userid` must be set when deleting assets"
+    assert assetid is not None, "`assetid` must be set when deleting assets"
+
+    res = db.session.execute(
+        text(f"""
+             DELETE FROM Assets
+             WHERE id = :assetid AND userid = :userid
+             RETURNING TRUE as success
+        """),
+        {
+            "userid": userid,
+            "assetid": assetid,
+        }
+    )
+
+    success = res.fetchone()
+    if not success:
+        db.session.rollback()
+        return False
+
+    db.session.commit()
+    return True
+
+def delete_history_item_from_asset(
+    userid : int,
+    assetid: int,
+    date   : str,
+):
+    assert userid  is not None, "`userid` must be set when deleting asset history items"
+    assert assetid is not None, "`assetid` must be set when deleting asset history items"
+    assert date    is not None, "`date` must be set when deleting asset history items"
+
+    if not user_owns_asset(userid, assetid):
+        return False
+
+    res = db.session.execute(
+        text(f"""
+             DELETE FROM AssetHistory
+             WHERE assetid = :assetid AND date = :date
+             RETURNING TRUE as success
+        """),
+        {
+            "date": date,
+            "assetid": assetid,
+        }
+    )
+
+    success = res.fetchone()
+    if not success:
+        db.session.rollback()
+        return False
+
+    db.session.commit()
+    return True
+
+
 def create_assethistory_entry(
     assetid: int,
     date: str,
@@ -216,7 +325,7 @@ def get_user_assets(
 
     res = None
     sql = """
-        SELECT A.name, A.details as description, AH.value
+        SELECT A.id, A.name, A.details as description, AH.value
         FROM Assets A
         LEFT JOIN AssetHistory AH
         ON A.id = AH.assetid
@@ -236,6 +345,26 @@ def get_user_assets(
         {
             "userid": userid,
             "limit": limit,
+        }
+    )
+
+    return res.fetchall()
+
+def get_asset_history(
+    userid : int,
+    assetid: int,
+):
+    res = db.session.execute(
+        text("""
+             SELECT AH.date, AH.value
+             FROM AssetHistory AH
+             LEFT JOIN Assets A
+             ON A.id = AH.assetid
+             WHERE A.id = :assetid AND A.userid = :userid
+        """),
+        {
+            "userid": userid,
+            "assetid": assetid,
         }
     )
 

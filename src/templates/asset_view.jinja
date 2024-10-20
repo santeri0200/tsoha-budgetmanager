@@ -9,32 +9,25 @@
   <div class="panel-content">
     <div class="panel-item-col panel-button-col">
       <p></p>
-      <form action="/assets/modify" method="POST">
+      <form action="/assets/{{ assetid }}/delete" method="POST">
         {% for item in rows %}
           <div class="panel-button-wrapper">
-            <button name="modify" value="{{ item['id'] }}">&#9999;</button>
-            <button name="delete" value="{{ item['id'] }}">&#x267B;</button>
+            <button name="delete" value="{{ item['date'] }}">&#x1f5d1;</button>
           </div>
         {% endfor %}
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
       </form>
     </div>
     <div class="panel-item-col">
-      <p>Name</p>
+      <p>Date</p>
       {% for item in rows %}
-        <p class="capitalise">{{ item["name"] }}</p>
+        <p>{{ item["date"] }}</p>
       {% endfor %}
     </div>
     <div class="panel-item-col">
       <p>Value</p>
       {% for item in rows %}
-        <p>{{ item["value"] }}</p>
-      {% endfor %}
-    </div>
-    <div class="panel-item-col panel-item-col-last">
-      <p>Description</p>
-      {% for item in rows %}
-        <p>{{ item["description"] }}</p>
+        <p>{{ item["value"] or "0.00" }}</p>
       {% endfor %}
     </div>
   </div>
@@ -43,17 +36,16 @@
 {% block content%}
   <div class="content">
     <div class="panel">
+      <a href="{{ url_for('assets') }}">Go back</a>
       <div class="container panel-content creation-panel">
         <label class="panel-checkbox selection">
           <p class="active">Cancel</p>
-          <p class="inactive">Add new asset</p>
+          <p class="inactive">Add new history item</p>
           <input type="checkbox">
         </label>
-        <form action="/assets/add" method="POST">
-          <h1 class="container-header">Create an asset</h1>
+        <form action="/assets/{{ assetid }}/add" method="POST">
+          <h1 class="container-header">Add new history item</h1>
           <label>*<span>required</span></label>
-          <input type="text"   name="assetname"   placeholder="Name"          required="true">
-          <input type="text"   name="description" placeholder="Description">
           <input type="date"   name="date"        placeholder="Date">
           <label>*<span>required</span></label>
           <input type="number" name="value"       placeholder="Initial value" required="true" step="0.01">

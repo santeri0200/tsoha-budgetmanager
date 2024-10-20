@@ -102,6 +102,107 @@ def create_assets():
 
     return redirect(url_for("assets"))
 
+@app.route("/assets/modify", methods=["POST"])
+@authenticate
+@check_csrf
+def delete_asset():
+    modify: str | None = request.form.get("modify", None)  # type: ignore[annotation-unchecked]
+    delete: str | None = request.form.get("delete", None)  # type: ignore[annotation-unchecked]
+
+    is_invalid = False
+
+    try:
+        if modify and str(int(modify)) != modify:
+            is_invalid = True
+            flash("Trying to modify invalid asset")
+    except ValueError:
+        is_invalid = True
+        flash("Trying to modify invalid asset")
+
+    try:
+        if delete and str(int(delete)) != delete:
+            is_invalid = True
+            flash("Trying to delete invalid asset")
+    except ValueError:
+        is_invalid = True
+        flash("Trying to delete invalid asset")
+
+    if is_invalid:
+        pass
+    elif modify:
+        return redirect(url_for("asset_view", id=modify))
+    elif delete:
+        success = database.delete_asset(session["userid"], delete)
+        if not success:
+            flash("Failed to delete asset")
+    else:
+        flash("No item specified to be modified")
+
+    return redirect(url_for("assets"))
+
+@app.route("/assets/<int:id>", methods=["GET"])
+@authenticate
+def asset_view(id):
+    return render_template(
+       "asset_view.jinja",
+       session=session,
+       assetid=id,
+       data=database.get_asset_history(session["userid"], id),
+       usenav=True
+   )
+
+@app.route("/assets/<int:id>/add", methods=["POST"])
+@authenticate
+@check_csrf
+def add_history_item_to_asset(id):
+    value: str | None = request.form.get("value", None)  # type: ignore[annotation-unchecked]
+    date : str | None = request.form.get("date" , None)  # type: ignore[annotation-unchecked]
+
+    is_invalid = False
+
+    try:
+        float(value)
+    except (ValueError, TypeError):
+        flash("Value must be convertable to a float")
+        is_invalid = True
+
+    try:
+        if date:
+            datetime.fromisoformat(date)
+    except ValueError:
+        flash("Date must be ISO formated")
+        is_invalid = True
+
+    if not is_invalid:
+        success = database.add_history_item_to_asset(session["userid"], id, value, date)
+        if not success:
+            flash(f"Failed to add history item to asset")
+
+    return redirect(url_for("asset_view", id=id))
+
+@app.route("/assets/<int:id>/delete", methods=["POST"])
+@authenticate
+@check_csrf
+def delete_history_item_from_asset(id):
+    date: str | None = request.form.get("delete", None)  # type: ignore[annotation-unchecked]
+
+    is_invalid = False
+
+    try:
+        if date:
+            datetime.fromisoformat(date)
+    except ValueError:
+        flash("Date must be ISO formated")
+        is_invalid = True
+
+    if not is_invalid:
+        success = database.delete_history_item_from_asset(session["userid"], id, date)
+        if not success:
+            flash(f"Failed to delete history item from asset")
+
+    return redirect(url_for("asset_view", id=id))
+
+
 # Receipts
 @app.route("/receipts", methods=["GET"])
 @authenticate
@@ -181,7 +282,7 @@ def delete_receipt():
     elif delete:
         success = database.delete_receipt(session["userid"], delete)
         if not success:
-            flash("Failed to delete item from the receipt")
+            flash("Failed to delete receipt")
     else:
         flash("No item specified to be modified")
 
